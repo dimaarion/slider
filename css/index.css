@@ -1,0 +1,16 @@
+#slider .images{
+	width: 1000px;
+	height: 800px
+}
+#slider div{
+	position: absolute;
+}
+#slider .imagesBlockHidden{
+	overflow: hidden;
+	width: 100px;
+	height: 800px;
+}
+.imagesBlockHidden{
+	border: solid 1px #fff
+	;
+}
