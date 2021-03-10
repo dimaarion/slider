@@ -5,6 +5,15 @@ const slider = {
   liStyle: {
     listStyle: "none"
   },
+  ulStyle: {
+    margin: "0px",
+    pading: "0px"
+  },
+  col: 40,
+  heightDiv: 500,
+  imgSt: {},
+  speed: 50,
+  countSpeed: 1,
   getId(e) {
     return document.getElementById(e);
   },
@@ -29,8 +38,11 @@ const slider = {
 
     return e.setAttribute("style", rezult.join(""));
   },
-  imageArray() {
-    return Array.from(this.getId(this.id).getElementsByTagName("img"));
+  tegElArray(t) {
+    return Array.from(this.getId(this.id).getElementsByTagName(t));
+  },
+  classArray(c) {
+    return Array.from(document.getElementsByClassName(c));
   },
   countArray(n) {
     let a = [];
@@ -39,17 +51,33 @@ const slider = {
     }
     return a;
   },
-  createEl(e) {
-    return document.body.appendChild(document.createElement(e));
+  createEl(e, o = {}) {
+    let el = document.body.appendChild(document.createElement(e));
+    for (const key in o) {
+      if (o.hasOwnProperty(key)) {
+        el.setAttribute(key, o[key]);
+      }
+    }
+
+    return el;
   },
   createUl() {
     this.createEl("ul").setAttribute("id", this.idUl);
   },
   imgStyle() {
-    this.imageArray().map((img) => this.css(img, { display: "none" }));
+    this.imageArray().map((img) => this.css(img, this.imgSt));
   },
   listStyle() {
     this.getClass(this.classLi).map((li) => this.css(li, this.liStyle));
+    this.css(this.getId(this.idUl), this.ulStyle);
+  },
+  blockStyle() {
+    this.classArray("divWid").map(function (bl, i) {
+      return (
+        (bl.style.zIndex = slider.classArray("divWid").length - i),
+        bl.setAttribute("data-id", i)
+      );
+    });
   },
   createLi() {
     this.countArray(5).map((li) =>
@@ -61,12 +89,82 @@ const slider = {
       this.getId(this.idUl).appendChild(this.getClass(this.classLi)[i])
     );
   },
+  countBlock(n) {
+    let win = document.body.clientWidth;
+    let countCol = Math.round(win / n);
+    return countCol - 2;
+  },
+  blockSlider(n) {
+    this.countArray(this.col).map((div, i) =>
+      this.createEl("div", {
+        class: "divWid",
+        dataId: i,
+        style:
+          "width:" +
+          this.countBlock(this.col) +
+          "px;height:" +
+          this.heightDiv +
+          "px;overflow: hidden;background-image: url(" +
+          this.tegElArray("img")[n].src +
+          ");float:left;background-position-x:" +
+          -this.countBlock(this.col) * div +
+          "px;background-size: inherit; position:absolute;margin-left:" +
+          this.countBlock(this.col) * div +
+          "px;background-repeat: no-repeat;"
+      })
+    );
+    this.classArray("divWid").map((div) =>
+      this.getId(this.id).appendChild(div)
+    );
+  },
+  forImages() {
+    this.tegElArray("img").map((img, i) => this.blockSlider(i));
+  },
+  animationStyle(step) {
+    if (slider.classArray("divWid")[step] !== undefined) {
+      //let dataId = slider.classArray("divWid")[step].getAttribute("data-id");
+      slider.classArray("divWid")[step].style.transition = 1 + "s";
+      slider.classArray("divWid")[step].style.marginTop = this.heightDiv + "px";
+    }
+    if (step > slider.classArray("divWid").length - (slider.col + 1)) {
+      slider
+        .classArray("divWid")
+        .map((div) => (div.style.marginTop = 0 + "px"));
+      // slider.classArray("divWid")[10].style.marginTop = 0 + "px";
+    }
+  },
+  draw() {
+    let count = 0;
+    let step = -1;
+    let globalCount = 0;
+    let interval = setInterval(function () {
+      globalCount = globalCount + 1;
+
+      if (globalCount > slider.col * 4) {
+        globalCount = 0;
+      }
+
+      if (globalCount > slider.col * 2) {
+        count = count + 1;
+
+        if (count > slider.countSpeed) {
+          count = 0;
+          step = step + 1;
+        }
+
+        if (step > slider.classArray("divWid").length - 1) {
+          step = 0;
+        }
+      }
+
+      slider.animationStyle(step);
+    }, this.speed);
+  },
   display() {
-    this.createUl();
-    this.createLi();
-    this.imgStyle();
-    this.listStyle();
-    this.createList();
+    this.forImages();
+    this.tegElArray("img").map((img) => this.css(img, { display: "none" }));
+    this.blockStyle();
+    this.draw();
   }
 };
 slider.display();
