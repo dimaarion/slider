@@ -10,7 +10,7 @@ const slider = {
     pading: "0px"
   },
   col: 40,
-  heightDiv: 500,
+  heightDiv: 3,
   imgSt: {},
   speed: 50,
   countSpeed: 1,
@@ -72,6 +72,15 @@ const slider = {
     this.css(this.getId(this.idUl), this.ulStyle);
   },
   blockStyle() {
+    this.css(this.getId(this.id), {
+      height: document.body.clientWidth / slider.heightDiv + "px",
+      overflow: "hidden",
+      zIndex: 10000,
+      position: "relative",
+      margin: "auto",
+      width: "80%"
+    });
+
     this.classArray("divWid").map(function (bl, i) {
       return (
         (bl.style.zIndex = slider.classArray("divWid").length - i),
@@ -103,16 +112,19 @@ const slider = {
           "width:" +
           this.countBlock(this.col) +
           "px;height:" +
-          this.heightDiv +
+          document.body.clientWidth / this.heightDiv +
           "px;overflow: hidden;background-image: url(" +
           this.tegElArray("img")[n].src +
           ");float:left;background-position-x:" +
           -this.countBlock(this.col) * div +
           "px;background-size: inherit; position:absolute;margin-left:" +
           this.countBlock(this.col) * div +
-          "px;background-repeat: no-repeat;"
+          "px;background-repeat: no-repeat;background-size:" +
+          document.body.clientWidth +
+          "px;"
       })
     );
+
     this.classArray("divWid").map((div) =>
       this.getId(this.id).appendChild(div)
     );
@@ -122,15 +134,14 @@ const slider = {
   },
   animationStyle(step) {
     if (slider.classArray("divWid")[step] !== undefined) {
-      //let dataId = slider.classArray("divWid")[step].getAttribute("data-id");
       slider.classArray("divWid")[step].style.transition = 1 + "s";
-      slider.classArray("divWid")[step].style.marginTop = this.heightDiv + "px";
+      slider.classArray("divWid")[step].style.marginTop =
+        document.body.clientWidth / slider.heightDiv + "px";
     }
     if (step > slider.classArray("divWid").length - (slider.col + 1)) {
       slider
         .classArray("divWid")
         .map((div) => (div.style.marginTop = 0 + "px"));
-      // slider.classArray("divWid")[10].style.marginTop = 0 + "px";
     }
   },
   draw() {
@@ -165,6 +176,15 @@ const slider = {
     this.tegElArray("img").map((img) => this.css(img, { display: "none" }));
     this.blockStyle();
     this.draw();
+    let w = document.body.clientWidth;
+    function f(e) {
+      slider.getId(slider.id).style.height =
+        document.body.clientWidth / slider.heightDiv + "px";
+      slider.classArray("divWid").map((div) => div.remove());
+      slider.forImages();
+      slider.blockStyle();
+    }
+    window.addEventListener("resize", f, false);
   }
 };
 slider.display();
