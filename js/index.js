@@ -132,22 +132,39 @@ const slider = {
   forImages() {
     this.tegElArray("img").map((img, i) => this.blockSlider(i));
   },
-  animationStyle(step) {
+  animationStyle(step, invers) {
     if (slider.classArray("divWid")[step] !== undefined) {
-      slider.classArray("divWid")[step].style.transition = 1 + "s";
-      slider.classArray("divWid")[step].style.marginTop =
-        document.body.clientWidth / slider.heightDiv + "px";
+      if (invers === 0) {
+        slider.classArray("divWid")[step].style.transition = 1 + "s";
+        slider.classArray("divWid")[step].style.marginTop =
+          document.body.clientWidth / slider.heightDiv + "px";
+      } else {
+        if (
+          slider.classArray("divWid")[
+            slider.classArray("divWid").length - 1 - step
+          ] !== undefined
+        ) {
+          slider.classArray("divWid")[
+            slider.classArray("divWid").length - 1 - step
+          ].style.transition = 1 + "s";
+          slider.classArray("divWid")[
+            slider.classArray("divWid").length - 1 - step
+          ].style.marginTop = 0 + "px";
+        }
+      }
     }
-    if (step > slider.classArray("divWid").length - (slider.col + 1)) {
-      slider
+
+    if (step > slider.classArray("divWid").length - 1) {
+      /*slider
         .classArray("divWid")
-        .map((div) => (div.style.marginTop = 0 + "px"));
+        .map((div) => (div.style.marginTop = 0 + "px"));*/
     }
   },
   draw() {
     let count = 0;
     let step = -1;
     let globalCount = 0;
+    let invers = 0;
     let interval = setInterval(function () {
       globalCount = globalCount + 1;
 
@@ -165,10 +182,14 @@ const slider = {
 
         if (step > slider.classArray("divWid").length - 1) {
           step = 0;
+          invers = invers + 1;
+        }
+        if (invers > 1) {
+          invers = 0;
         }
       }
 
-      slider.animationStyle(step);
+      slider.animationStyle(step, invers);
     }, this.speed);
   },
   display() {
