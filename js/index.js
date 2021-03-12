@@ -9,7 +9,8 @@ const slider = {
     margin: "0px",
     pading: "0px"
   },
-  col: 40,
+  col: 30,
+  width: 80,
   heightDiv: 3,
   imgSt: {},
   speed: 50,
@@ -78,7 +79,7 @@ const slider = {
       zIndex: 10000,
       position: "relative",
       margin: "auto",
-      width: "80%"
+      width: this.width + "%"
     });
 
     this.classArray("divWid").map(function (bl, i) {
@@ -103,6 +104,21 @@ const slider = {
     let countCol = Math.round(win / n);
     return countCol - 2;
   },
+  bacgImage() {
+    this.getId(this.id).appendChild(
+      this.createEl("div", {
+        id: "bacgImg",
+        style:
+          "width:100%;height:" +
+          document.body.clientWidth / this.heightDiv +
+          "px;;background-image:url(" +
+          this.tegElArray("img")[0].src +
+          ");z-index:0;background-repeat: no-repeat;background-size:" +
+          document.body.clientWidth +
+          "px;position: absolute;"
+      })
+    );
+  },
   blockSlider(n) {
     this.countArray(this.col).map((div, i) =>
       this.createEl("div", {
@@ -117,11 +133,11 @@ const slider = {
           this.tegElArray("img")[n].src +
           ");float:left;background-position-x:" +
           -this.countBlock(this.col) * div +
-          "px;background-size: inherit; position:absolute;margin-left:" +
+          "px;position:absolute;margin-left:" +
           this.countBlock(this.col) * div +
           "px;background-repeat: no-repeat;background-size:" +
           document.body.clientWidth +
-          "px;"
+          "px;z-index:1000;"
       })
     );
 
@@ -152,12 +168,6 @@ const slider = {
           ].style.marginTop = 0 + "px";
         }
       }
-    }
-
-    if (step > slider.classArray("divWid").length - 1) {
-      /*slider
-        .classArray("divWid")
-        .map((div) => (div.style.marginTop = 0 + "px"));*/
     }
   },
   draw() {
@@ -193,11 +203,11 @@ const slider = {
     }, this.speed);
   },
   display() {
+    this.bacgImage();
     this.forImages();
     this.tegElArray("img").map((img) => this.css(img, { display: "none" }));
     this.blockStyle();
     this.draw();
-    let w = document.body.clientWidth;
     function f(e) {
       slider.getId(slider.id).style.height =
         document.body.clientWidth / slider.heightDiv + "px";
